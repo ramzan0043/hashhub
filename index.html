@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashtag Hub | All Platform Hashtag Collections</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#8b5cf6",
+                        secondary: "#10b981",
+                        accent: "#f59e0b",
+                        lightBg: "#f8fafc",
+                        cardBg: "#ffffff",
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+         /* New Premium Features */
+    .premium-badge {
+        background: linear-gradient(135deg, #f59e0b, #f97316);
+        color: white;
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-weight: bold;
+    }
+    
+    .dark-mode {
+        background: #0f172a;
+        color: #f1f5f9;
+    }
+    
+    .dark-mode .hashtag-box,
+    .dark-mode .hashtag-card,
+    .dark-mode .stats-card {
+        background: #1e293b;
+        border-color: #334155;
+        color: #f1f5f9;
+    }
+    
+    .dark-mode .hashtag-item {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    
+    .dark-mode .hashtag-item:hover {
+        background: #334155;
+    }
+    
+    /* Progress indicator */
+    .reading-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #e5e7eb;
+        z-index: 100;
+    }
+    
+    .reading-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    
+    /* Saved hashtags indicator */
+    .saved-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    
+    /* Quick copy floating panel */
+    .quick-copy-panel {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        background: white;
+        border-radius: 16px;
+        padding: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        z-index: 45;
+        width: 300px;
+        max-width: 90vw;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+    }
+    
+    .quick-copy-panel.active {
+        transform: translateX(0);
+    }
+    
+    .dark-mode .quick-copy-panel {
+        background: #1e293b;
+        color: #f1f5f9;
+    }
+    
+    /* Animation for new hashtags */
+    .new-hashtag {
+        animation: highlight 2s ease;
+    }
+    
+    @keyframes highlight {
+        0% { background: rgba(139, 92, 246, 0.1); }
+        100% { background: transparent; }
+    }
+    
+    /* Grid/List view toggle */
+    .view-toggle {
+        display: flex;
+        gap: 5px;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 12px;
+        margin-left: auto;
+    }
+    
+    .view-toggle button {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .view-toggle button.active {
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Platform-specific recommendations */
+    .platform-recommendation {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .platform-recommendation::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, #8b5cf6, #3b82f6);
+    }
+    
+    /* Tooltip */
+    .tooltip {
+        position: relative;
+    }
+    
+    .tooltip::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #374151;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 100;
+    }
+    
+    .tooltip:hover::after {
+        opacity: 1;
+    }
+    
+    /* Share button styles */
+    .share-options {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .share-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    /* Improved mobile search */
+    .mobile-search-active .mobile-search-overlay {
+        display: block;
+    }
+    
+    .mobile-search-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 100;
+        display: none;
+    }
+    
+    /* Performance metrics */
+    .performance-meter {
+        position: relative;
+        width: 120px;
+        height: 120px;
+    }
+    
+    .performance-meter svg {
+        transform: rotate(-90deg);
+    }
+    
+    .performance-meter .circle-bg {
+        fill: none;
+        stroke: #e5e7eb;
+        stroke-width: 8;
+    }
+    
+    .performance-meter .circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 314;
+        stroke-dashoffset: 314;
+        transition: stroke-dashoffset 1s ease;
+    }
+    
+    /* Print optimization */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .hashtag-box {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+    }
+        
+        .hashtag-card {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .hashtag-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.2), 0 10px 10px -5px rgba(139, 92, 246, 0.04);
+        }
+        
+        .trending-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .hashtag-cloud span {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 50px;
+        }
+        
+        .hashtag-cloud span:hover {
+            transform: scale(1.1);
+        }
+        
+        .stats-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .hashtag-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 6px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e5e7eb;
+            min-height: 56px;
+        }
+        
+        .hashtag-item:hover {
+            background: #e0e7ff;
+            transform: translateX(5px);
+            border-color: #8b5cf6;
+        }
+        
+        .copy-btn {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            padding: 8px;
+            min-width: 40px;
+            min-height: 40px;
+        }
+        
+        .hashtag-item:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        .category-tag {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .category-tag:hover {
+            transform: translateY(-5px);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .floating-btn {
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 10px;
+        }
+        
+        .hashtag-box {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .hashtag-box:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .counter-animate {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            transition: all 0.3s ease;
+            transform: translateX(100%);
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        .menu-overlay {
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .hashtag-item {
+                padding: 10px 12px;
+                min-height: 52px;
+            }
+            
+            .copy-btn {
+                opacity: 1 !important;
+                min-width: 36px;
+                min-height: 36px;
+            }
+            
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 70px;
+                right: 20px;
+            }
+            
+            #toast {
+                bottom: 130px;
+                right: 20px;
+                left: 20px;
+                text-align: center;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            .search-box input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .search-box button {
+                width: 100%;
+            }
+            
+            .category-tag {
+                padding: 15px !important;
+            }
+            
+            .hashtag-box {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2.5rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem !important;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 15px !important;
+            }
+        }
+
+        /* Touch-friendly styles */
+        button, .hashtag-item, .category-tag {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        button:active, .hashtag-item:active {
+            transform: scale(0.98);
+        }
+        
+        /* Prevent zoom on input focus in mobile */
+        @media (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800 bg-lightBg">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-xl shadow">
+                        <i class="fas fa-hashtag text-purple-600 text-xl md:text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold">Hash<span class="text-yellow-300">Hub</span></h1>
+                        <p class="text-xs opacity-90 hidden md:block">Complete Hashtag Collection</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-6 lg:space-x-8 text-sm font-medium">
+                    <a href="#home" class="hover:text-yellow-300 transition">Home</a>
+                    <a href="#trending" class="hover:text-yellow-300 transition">Trending</a>
+                    <a href="#platforms" class="hover:text-yellow-300 transition">Platforms</a>
+                    <a href="#categories" class="hover:text-yellow-300 transition">Categories</a>
+                    <a href="#tips" class="hover:text-yellow-300 transition">Tips</a>
+                </div>
+                
+                <div class="flex items-center space-x-3 md:space-x-4">
+                    <button class="hidden md:block bg-white text-purple-600 px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-gray-50 transition shadow">
+                        <i class="fas fa-plus mr-2"></i>Add Hashtag
+                    </button>
+                    <div class="relative">
+                        <img src="https://ui-avatars.com/api/?name=Ramzan&background=764ba2&color=fff&size=40" 
+                             class="rounded-full cursor-pointer border-2 border-white w-10 h-10" alt="User">
+                    </div>
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuButton" class="md:hidden text-white text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenuOverlay" class="menu-overlay fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"></div>
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 p-6 md:hidden">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-xl font-bold text-gray-800">Menu</h2>
+            <button id="closeMenuButton" class="text-gray-600 text-2xl">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-6">
+            <a href="#home" class="block text-lg font-semibold text-gray-700 hover:text-purple-600 transition" onclick="closeMobileMenu()">Home</a>
+            <a href="#trending" class="block text-lg font-semibold text-gray-700 hover:text-purple-600 transition" onclick="closeMobileMenu()">Trending</a>
+            <a href="#platforms" class="block text-lg font-semibold text-gray-700 hover:text-purple-600 transition" onclick="closeMobileMenu()">Platforms</a>
+            <a href="#categories" class="block text-lg font-semibold text-gray-700 hover:text-purple-600 transition" onclick="closeMobileMenu()">Categories</a>
+            <a href="#tips" class="block text-lg font-semibold text-gray-700 hover:text-purple-600 transition" onclick="closeMobileMenu()">Tips</a>
+            
+            <div class="pt-6 border-t">
+                <button class="w-full bg-purple-600 text-white px-5 py-3 rounded-full font-semibold hover:bg-purple-700 transition shadow mb-4">
+                    <i class="fas fa-plus mr-2"></i>Add Hashtag
+                </button>
+                <button class="w-full border-2 border-purple-600 text-purple-600 px-5 py-3 rounded-full font-semibold hover:bg-purple-50 transition">
+                    <i class="fas fa-user mr-2"></i>My Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg text-white py-10 md:py-16">
+        <div class="container mx-auto px-4 md:px-6 text-center">
+            <h1 class="hero-title text-4xl md:text-5xl lg:text-6xl font-black mb-4 md:mb-6 leading-tight">
+                Find <span class="text-yellow-300">Perfect Hashtags</span>
+                <br class="hidden md:block">For <span class="glow-text">Every Platform</span>
+            </h1>
+            <p class="hero-subtitle text-lg md:text-xl lg:text-2xl mb-8 md:mb-10 opacity-90 max-w-3xl mx-auto px-4">
+                Discover thousands of trending hashtags for Instagram, Facebook, Twitter, TikTok, YouTube & more. Copy and paste instantly!
+            </p>
+            
+            <!-- Search Box -->
+            <div class="max-w-3xl mx-auto mb-10 md:mb-12 px-4">
+                <div class="search-box rounded-2xl md:rounded-full p-3 md:p-2 flex flex-col md:flex-row items-center shadow-2xl">
+                    <div class="flex-1 flex items-center pl-4 md:pl-6 w-full mb-3 md:mb-0">
+                        <i class="fas fa-search text-gray-400 mr-3 text-lg"></i>
+                        <input type="text" id="mainSearch" 
+                               placeholder="Search hashtags..." 
+                               class="w-full bg-transparent outline-none text-base md:text-lg placeholder-gray-500 py-2">
+                    </div>
+                    <button id="searchBtn" class="w-full md:w-auto bg-yellow-400 text-gray-900 px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-full font-bold hover:bg-yellow-500 transition shadow-lg text-lg">
+                        <i class="fas fa-rocket mr-2"></i>Search Now
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mt-6 md:mt-8">
+                    <span class="bg-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm cursor-pointer hover:bg-white/30 transition" onclick="searchKeyword('#trending')">#trending</span>
+                    <span class="bg-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm cursor-pointer hover:bg-white/30 transition" onclick="searchKeyword('#instagram')">#instagram</span>
+                    <span class="bg-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm cursor-pointer hover:bg-white/30 transition" onclick="searchKeyword('#viral')">#viral</span>
+                    <span class="bg-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm cursor-pointer hover:bg-white/30 transition" onclick="searchKeyword('#love')">#love</span>
+                    <span class="bg-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm cursor-pointer hover:bg-white/30 transition" onclick="searchKeyword('#fashion')">#fashion</span>
+                </div>
+            </div>
+
+           <!-- Stats -->
+            <div class="stats-grid grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto px-4">
+                <div class="text-center bg-white/10 rounded-xl p-4">
+                    <div class="text-2xl md:text-3xl lg:text-4xl font-bold counter" data-target="5000">0</div>
+                    <div class="text-gray-200 text-sm md:text-base">Hashtag Sets</div>
+                </div>
+                <div class="text-center bg-white/10 rounded-xl p-4">
+                    <div class="text-2xl md:text-3xl lg:text-4xl font-bold counter" data-target="50000000" data-suffix="+">0</div>
+                    <div class="text-gray-200 text-sm md:text-base">Daily Uses</div>
+                </div>
+                <div class="text-center bg-white/10 rounded-xl p-4">
+                    <div class="text-2xl md:text-3xl lg:text-4xl font-bold counter" data-target="12" data-suffix="+">0</div>
+                    <div class="text-gray-200 text-sm md:text-base">Platforms</div>
+                </div>
+                <div class="text-center bg-white/10 rounded-xl p-4">
+                    <div class="text-2xl md:text-3xl lg:text-4xl font-bold counter" data-target="100" data-suffix="%">0</div>
+                    <div class="text-gray-200 text-sm md:text-base">Free Forever</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform-wise Hashtag Boxes -->
+    <section id="platforms" class="py-12 md:py-16 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8 md:mb-12">
+                <i class="fas fa-layer-group text-purple-600 mr-3"></i>
+                Platform-wise Hashtag Collections
+            </h2>
+            <p class="text-gray-600 text-center mb-6 md:mb-8 max-w-2xl mx-auto px-4">
+                Click on any hashtag to copy instantly! Each box contains 11 curated hashtags for maximum reach.
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                <!-- Box 1: Instagram -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-instagram text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Instagram</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-purple-100 text-purple-600 rounded-full text-xs md:text-sm font-semibold hover:bg-purple-200 transition" onclick="copyAllHashtags('instagram')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="instagram-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 2: Facebook -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-facebook text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Facebook</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-600 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-200 transition" onclick="copyAllHashtags('facebook')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="facebook-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 3: Twitter -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-sky-500 to-blue-300 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-twitter text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Twitter</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-sky-100 text-sky-600 rounded-full text-xs md:text-sm font-semibold hover:bg-sky-200 transition" onclick="copyAllHashtags('twitter')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="twitter-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 4: TikTok -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-800 to-gray-600 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-tiktok text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">TikTok</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 text-gray-700 rounded-full text-xs md:text-sm font-semibold hover:bg-gray-200 transition" onclick="copyAllHashtags('tiktok')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="tiktok-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 5: YouTube -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-red-400 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-youtube text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">YouTube</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-red-100 text-red-600 rounded-full text-xs md:text-sm font-semibold hover:bg-red-200 transition" onclick="copyAllHashtags('youtube')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="youtube-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 6: LinkedIn -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-700 to-blue-500 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-linkedin text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">LinkedIn</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-blue-50 text-blue-700 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-100 transition" onclick="copyAllHashtags('linkedin')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="linkedin-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 7: Pinterest -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-red-500 to-pink-500 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-pinterest text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Pinterest</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-red-50 text-red-600 rounded-full text-xs md:text-sm font-semibold hover:bg-red-100 transition" onclick="copyAllHashtags('pinterest')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="pinterest-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 8: WhatsApp -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-600 to-green-400 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">WhatsApp</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-green-100 text-green-600 rounded-full text-xs md:text-sm font-semibold hover:bg-green-200 transition" onclick="copyAllHashtags('whatsapp')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="whatsapp-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 9: Snapchat -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-200 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-snapchat text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Snapchat</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-yellow-100 text-yellow-700 rounded-full text-xs md:text-sm font-semibold hover:bg-yellow-200 transition" onclick="copyAllHashtags('snapchat')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="snapchat-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Box 10: Telegram -->
+                <div class="hashtag-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-300 flex items-center justify-center text-white mr-3">
+                                <i class="fab fa-telegram text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800">Telegram</h3>
+                                <p class="text-sm text-gray-500">11 trending hashtags</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 md:px-4 md:py-2 bg-blue-100 text-blue-600 rounded-full text-xs md:text-sm font-semibold hover:bg-blue-200 transition" onclick="copyAllHashtags('telegram')">
+                            Copy All
+                        </button>
+                    </div>
+                    <div class="telegram-hashtags scrollbar-custom max-h-60 overflow-y-auto pr-2">
+                        <!-- Hashtags will be loaded by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Hashtags Section -->
+    <section id="trending" class="py-12 md:py-16 bg-gray-50">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
+                        <i class="fas fa-fire text-orange-500 mr-3"></i>
+                        Trending Now
+                        <span class="trending-pulse text-red-500 ml-2">• LIVE</span>
+                    </h2>
+                    <p class="text-gray-600 mt-2">Real-time trending hashtags across all social platforms</p>
+                </div>
+                <div class="flex space-x-3 md:space-x-4 w-full md:w-auto">
+                    <button class="flex-1 md:flex-none px-4 md:px-6 py-2 border-2 border-purple-600 text-purple-600 rounded-full font-semibold hover:bg-purple-50 transition text-sm md:text-base">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                    <button class="flex-1 md:flex-none px-4 md:px-6 py-2 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition text-sm md:text-base">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hashtag Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                <!-- Card 1 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-purple-100 text-purple-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-twitter mr-1"></i>Twitter
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#AIRevolution</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Artificial Intelligence Trends</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-purple-600 counter" data-target="1200000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 45%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-purple-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-purple-700 transition copy-single" data-hashtag="#AIRevolution">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-blue-100 text-blue-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-instagram mr-1"></i>Instagram
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#FoodieGram</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Food Photography</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-blue-600 counter" data-target="890000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 32%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-blue-700 transition copy-single" data-hashtag="#FoodieGram">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-red-100 text-red-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-tiktok mr-1"></i>TikTok
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#DanceChallenge</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Viral Dance Trends</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-red-600 counter" data-target="3400000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 78%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-red-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-red-700 transition copy-single" data-hashtag="#DanceChallenge">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-green-100 text-green-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-youtube mr-1"></i>YouTube
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#TechReview</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Technology Reviews</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-green-600 counter" data-target="540000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 21%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-green-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-green-700 transition copy-single" data-hashtag="#TechReview">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-pink-100 text-pink-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-instagram mr-1"></i>Instagram
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#FashionWeek</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Fashion Trends</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-pink-600 counter" data-target="2100000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 65%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-pink-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-pink-700 transition copy-single" data-hashtag="#FashionWeek">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-twitter mr-1"></i>Twitter
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#CryptoNews</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Cryptocurrency Updates</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-yellow-600 counter" data-target="950000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 52%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-yellow-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-yellow-700 transition copy-single" data-hashtag="#CryptoNews">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-indigo-100 text-indigo-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-linkedin mr-1"></i>LinkedIn
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#CareerGrowth</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Professional Development</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-indigo-600 counter" data-target="420000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 38%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-indigo-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-indigo-700 transition copy-single" data-hashtag="#CareerGrowth">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="hashtag-card">
+                    <div class="p-5 md:p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-2 py-1 md:px-3 md:py-1 bg-teal-100 text-teal-600 rounded-full text-xs md:text-sm font-semibold">
+                                    <i class="fab fa-tiktok mr-1"></i>TikTok
+                                </span>
+                                <div class="mt-2">
+                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">#ComedySkits</h3>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Funny Videos</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl md:text-3xl font-bold text-teal-600 counter" data-target="5200000" data-suffix="">0</div>
+                                <div class="text-xs md:text-sm text-gray-500">Posts</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs md:text-sm text-gray-600">Trending Up 89%</span>
+                            </div>
+                            <button class="px-3 py-1.5 md:px-4 md:py-2 bg-teal-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-teal-700 transition copy-single" data-hashtag="#ComedySkits">
+                                Copy <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hashtag Categories Section -->
+    <section id="categories" class="py-12 md:py-16 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8 md:mb-12">
+                <i class="fas fa-tags text-purple-600 mr-3"></i>
+                Browse by Categories
+            </h2>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+                <!-- Category 1 -->
+                <div class="category-tag bg-gradient-to-br from-purple-500 to-pink-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('technology')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Technology</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">1,200 hashtags</p>
+                </div>
+                
+                <!-- Category 2 -->
+                <div class="category-tag bg-gradient-to-br from-blue-500 to-cyan-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('food')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Food & Drink</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">850 hashtags</p>
+                </div>
+                
+                <!-- Category 3 -->
+                <div class="category-tag bg-gradient-to-br from-green-500 to-emerald-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('fitness')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Fitness</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">720 hashtags</p>
+                </div>
+                
+                <!-- Category 4 -->
+                <div class="category-tag bg-gradient-to-br from-red-500 to-orange-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('music')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Music</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">950 hashtags</p>
+                </div>
+                
+                <!-- Category 5 -->
+                <div class="category-tag bg-gradient-to-br from-yellow-500 to-amber-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('business')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Business</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">680 hashtags</p>
+                </div>
+
+                <!-- More Categories -->
+                <div class="category-tag bg-gradient-to-br from-pink-500 to-rose-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('fashion')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Fashion</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">1,100 hashtags</p>
+                </div>
+
+                <div class="category-tag bg-gradient-to-br from-indigo-500 to-purple-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('travel')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Travel</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">780 hashtags</p>
+                </div>
+
+                <div class="category-tag bg-gradient-to-br from-gray-700 to-gray-900 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('gaming')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Gaming</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">920 hashtags</p>
+                </div>
+
+                <div class="category-tag bg-gradient-to-br from-rose-500 to-pink-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('love')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Love & Romance</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">1,500 hashtags</p>
+                </div>
+
+                <div class="category-tag bg-gradient-to-br from-cyan-500 to-blue-500 text-white p-4 md:p-6 rounded-2xl text-center cursor-pointer hover:shadow-xl" onclick="filterByCategory('education')">
+                    <div class="text-3xl md:text-4xl mb-3 md:mb-4">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold">Education</h3>
+                    <p class="text-xs md:text-sm opacity-90 mt-1 md:mt-2">640 hashtags</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hashtag Cloud Section -->
+    <section class="py-12 md:py-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
+                <i class="fas fa-cloud mr-3"></i>
+                Hashtag Cloud Explorer
+            </h2>
+            
+            <div class="hashtag-cloud flex flex-wrap justify-center gap-3 md:gap-4 p-4 md:p-8 bg-white/10 rounded-3xl">
+                <!-- Hashtags will be generated here -->
+            </div>
+            
+            <div class="text-center mt-8 md:mt-12">
+                <button id="generateCloud" class="px-6 py-3 md:px-8 md:py-3 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition shadow-lg text-sm md:text-base">
+                    <i class="fas fa-random mr-2"></i>Generate New Cloud
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section id="tips" class="py-12 md:py-16 bg-gray-50">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 md:mb-12">
+                <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+                Hashtag Tips & Best Practices
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <!-- Tips -->
+                <div class="space-y-4 md:space-y-6">
+                    <div class="bg-white p-5 md:p-6 rounded-2xl shadow">
+                        <h3 class="text-lg md:text-xl font-bold mb-3">✅ Mix Big & Niche Tags</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Always use a mix of popular hashtags (#love, #instagood) and niche-specific tags (#indiancoder, #veganrecipes) for maximum reach.</p>
+                    </div>
+                    
+                    <div class="bg-white p-5 md:p-6 rounded-2xl shadow">
+                        <h3 class="text-lg md:text-xl font-bold mb-3">✅ Optimal Number</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Instagram: 5-15 hashtags, Twitter: 1-3 hashtags, Facebook: 3-5 hashtags. Don't overdo it!</p>
+                    </div>
+                    
+                    <div class="bg-white p-5 md:p-6 rounded-2xl shadow">
+                        <h3 class="text-lg md:text-xl font-bold mb-3">✅ Location Matters</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Add location-based hashtags (#delhi, #mumbai) for local reach and community engagement.</p>
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="space-y-4 md:space-y-6">
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow border-l-4 border-purple-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Best Posting Time</h3>
+                                <p class="text-gray-600 text-sm md:text-base">For maximum engagement</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-purple-600 counter" data-target="7" data-suffix="-9 PM">0</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Engagement Rate</span>
+                                <span>68%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 68%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow border-l-4 border-blue-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Top Platform</h3>
+                                <p class="text-gray-600 text-sm md:text-base">By hashtag volume</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-blue-600">Instagram</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Market Share</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 42%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow border-l-4 border-green-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Daily Growth</h3>
+                                <p class="text-gray-600 text-sm md:text-base">New hashtags created</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-green-600 counter" data-target="1240" data-suffix="">0</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Growth Rate</span>
+                                <span>+18%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Analytics Section -->
+    <section class="py-12 md:py-16 bg-gray-50">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 md:mb-12">
+                <i class="fas fa-chart-line text-green-600 mr-3"></i>
+                Analytics & Insights
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <!-- Chart -->
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-lg md:text-xl font-bold mb-4 md:mb-6">Hashtag Growth Trends</h3>
+                    <div class="h-64 md:h-80">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="space-y-4 md:space-y-6">
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow-lg border-l-4 border-purple-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Most Used Platform</h3>
+                                <p class="text-gray-600 text-sm md:text-base">Based on hashtag volume</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-purple-600">Instagram</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Usage Share</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 42%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow-lg border-l-4 border-blue-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Peak Activity Time</h3>
+                                <p class="text-gray-600 text-sm md:text-base">Optimal posting hours</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-blue-600">7-9 PM</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Engagement Rate</span>
+                                <span>68%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 68%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card bg-white p-5 md:p-6 rounded-2xl shadow-lg border-l-4 border-green-500">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-800">Daily New Hashtags</h3>
+                                <p class="text-gray-600 text-sm md:text-base">Average creation rate</p>
+                            </div>
+                            <div class="text-2xl md:text-3xl font-bold text-green-600">1,240</div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Growth Rate</span>
+                                <span>+18%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Comparison -->
+    <section class="py-12 md:py-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
+                <i class="fas fa-layer-group mr-3"></i>
+                Platform Comparison
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 counter" data-target="4.2" data-suffix="1M">0</div>
+                    <div class="text-base md:text-lg">Twitter Hashtags</div>
+                    <div class="text-xs md:text-sm opacity-80 mt-2">#TwitterTrends</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 counter" data-target="8.7" data-suffix="3M">0</div>
+                    <div class="text-base md:text-lg">Instagram Hashtags</div>
+                    <div class="text-xs md:text-sm opacity-80 mt-2">#InstaGram</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 counter" data-target="12.3" data-suffix="4M">0</div>
+                    <div class="text-base md:text-lg">TikTok Hashtags</div>
+                    <div class="text-xs md:text-sm opacity-80 mt-2">#TikTokViral</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 counter" data-target="3.1" data-suffix="5M">0</div>
+                    <div class="text-base md:text-lg">YouTube Hashtags</div>
+                    <div class="text-xs md:text-sm opacity-80 mt-2">#YouTubeCreators</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 md:py-12">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="bg-white p-2 rounded-lg">
+                            <i class="fas fa-hashtag text-purple-600"></i>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold">Hash<span class="text-yellow-300">Hub</span></h2>
+                    </div>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        The ultimate platform for discovering, tracking and analyzing trending hashtags across all social media.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg md:text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition text-sm md:text-base" onclick="closeMobileMenu()">Home</a></li>
+                        <li><a href="#trending" class="text-gray-400 hover:text-white transition text-sm md:text-base" onclick="closeMobileMenu()">Trending Hashtags</a></li>
+                        <li><a href="#platforms" class="text-gray-400 hover:text-white transition text-sm md:text-base" onclick="closeMobileMenu()">Platform Collections</a></li>
+                        <li><a href="#categories" class="text-gray-400 hover:text-white transition text-sm md:text-base" onclick="closeMobileMenu()">Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg md:text-xl font-bold mb-4">Platforms</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition text-sm md:text-base">Instagram</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition text-sm md:text-base">Facebook</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition text-sm md:text-base">Twitter</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition text-sm md:text-base">TikTok</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg md:text-xl font-bold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 mb-4 text-sm md:text-base">Get daily trending hashtags in your inbox</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="flex-1 px-3 py-2 md:px-4 md:py-3 rounded-l-lg text-gray-900 outline-none text-sm md:text-base">
+                        <button class="bg-purple-600 px-4 py-2 md:px-6 md:py-3 rounded-r-lg font-semibold hover:bg-purple-700 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 md:mt-12 pt-6 md:pt-8 text-center text-gray-400 text-sm md:text-base">
+                <p>© 2023 HashHub. All rights reserved. | Designed for Hashtag Lovers</p>
+                <div class="flex justify-center space-x-4 md:space-x-6 mt-4">
+                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-github"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn fixed bottom-4 md:bottom-8 right-4 md:right-8 bg-purple-600 text-white p-4 rounded-full shadow-2xl z-40" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up text-xl"></i>
+    </button>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-20 md:bottom-24 right-4 md:right-8 bg-green-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-2xl z-50 hidden flex items-center max-w-xs">
+        <i class="fas fa-check-circle mr-2"></i>
+        <span id="toastMessage" class="text-sm md:text-base">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        // Hashtag Database
+        const hashtagDatabase = {
+            instagram: [
+                { tag: "#Love", posts: "2.1B", category: "love" },
+                { tag: "#InstaGood", posts: "850M", category: "general" },
+                { tag: "#PhotooftheDay", posts: "720M", category: "photography" },
+                { tag: "#Fashion", posts: "610M", category: "fashion" },
+                { tag: "#Beautiful", posts: "590M", category: "beauty" },
+                { tag: "#Happy", posts: "540M", category: "emotions" },
+                { tag: "#Cute", posts: "480M", category: "cute" },
+                { tag: "#TBT", posts: "420M", category: "memories" },
+                { tag: "#Like4Like", posts: "380M", category: "engagement" },
+                { tag: "#FollowMe", posts: "350M", category: "growth" },
+                { tag: "#PicoftheDay", posts: "320M", category: "photography" }
+            ],
+            facebook: [
+                { tag: "#Facebook", posts: "950M", category: "platform" },
+                { tag: "#FB", posts: "720M", category: "platform" },
+                { tag: "#Status", posts: "580M", category: "status" },
+                { tag: "#CoverPhoto", posts: "420M", category: "profile" },
+                { tag: "#Timeline", posts: "390M", category: "profile" },
+                { tag: "#ProfilePicture", posts: "350M", category: "profile" },
+                { tag: "#FacebookLive", posts: "310M", category: "live" },
+                { tag: "#FBLive", posts: "280M", category: "live" },
+                { tag: "#FBVideo", posts: "250M", category: "video" },
+                { tag: "#Memes", posts: "220M", category: "funny" },
+                { tag: "#Funny", posts: "200M", category: "funny" }
+            ],
+            twitter: [
+                { tag: "#Twitter", posts: "1.2B", category: "platform" },
+                { tag: "#Tweet", posts: "890M", category: "tweet" },
+                { tag: "#Retweet", posts: "750M", category: "engagement" },
+                { tag: "#Follow", posts: "680M", category: "growth" },
+                { tag: "#Trending", posts: "620M", category: "trending" },
+                { tag: "#Viral", posts: "580M", category: "viral" },
+                { tag: "#Thread", posts: "520M", category: "thread" },
+                { tag: "#Tweeter", posts: "480M", category: "user" },
+                { tag: "#Twitterati", posts: "420M", category: "user" },
+                { tag: "#Hashtag", posts: "380M", category: "meta" },
+                { tag: "#SocialMedia", posts: "350M", category: "platform" }
+            ],
+            tiktok: [
+                { tag: "#TikTok", posts: "3.5B", category: "platform" },
+                { tag: "#ForYou", posts: "2.8B", category: "algorithm" },
+                { tag: "#FYP", posts: "2.3B", category: "algorithm" },
+                { tag: "#ViralVideo", posts: "1.9B", category: "viral" },
+                { tag: "#Dance", posts: "1.7B", category: "dance" },
+                { tag: "#Comedy", posts: "1.5B", category: "comedy" },
+                { tag: "#TikTokIndia", posts: "1.2B", category: "location" },
+                { tag: "#Trend", posts: "980M", category: "trending" },
+                { tag: "#Challenge", posts: "850M", category: "challenge" },
+                { tag: "#Duet", posts: "720M", category: "feature" },
+                { tag: "#TikTokTrend", posts: "650M", category: "trending" }
+            ],
+            youtube: [
+                { tag: "#YouTube", posts: "2.1B", category: "platform" },
+                { tag: "#YouTuber", posts: "1.8B", category: "creator" },
+                { tag: "#Subscribe", posts: "1.5B", category: "growth" },
+                { tag: "#YouTubeVideo", posts: "1.3B", category: "video" },
+                { tag: "#Vlog", posts: "1.1B", category: "vlog" },
+                { tag: "#YouTubeChannel", posts: "950M", category: "channel" },
+                { tag: "#YouTubers", posts: "820M", category: "creator" },
+                { tag: "#YouTubeIndia", posts: "750M", category: "location" },
+                { tag: "#Video", posts: "680M", category: "video" },
+                { tag: "#ContentCreator", posts: "620M", category: "creator" },
+                { tag: "#TrendingNow", posts: "580M", category: "trending" }
+            ],
+            linkedin: [
+                { tag: "#LinkedIn", posts: "850M", category: "platform" },
+                { tag: "#Career", posts: "720M", category: "career" },
+                { tag: "#Job", posts: "680M", category: "job" },
+                { tag: "#Business", posts: "620M", category: "business" },
+                { tag: "#Networking", posts: "580M", category: "networking" },
+                { tag: "#Professional", posts: "520M", category: "professional" },
+                { tag: "#Work", posts: "480M", category: "work" },
+                { tag: "#HR", posts: "420M", category: "hr" },
+                { tag: "#Recruitment", posts: "380M", category: "recruitment" },
+                { tag: "#Entrepreneur", posts: "350M", category: "entrepreneur" },
+                { tag: "#Success", posts: "320M", category: "success" }
+            ],
+            pinterest: [
+                { tag: "#Pinterest", posts: "450M", category: "platform" },
+                { tag: "#DIY", posts: "380M", category: "craft" },
+                { tag: "#HomeDecor", posts: "320M", category: "home" },
+                { tag: "#Craft", posts: "280M", category: "craft" },
+                { tag: "#Art", posts: "250M", category: "art" },
+                { tag: "#Design", posts: "220M", category: "design" },
+                { tag: "#InteriorDesign", posts: "200M", category: "home" },
+                { tag: "#Wedding", posts: "180M", category: "wedding" },
+                { tag: "#Fashion", posts: "160M", category: "fashion" },
+                { tag: "#Recipe", posts: "150M", category: "food" },
+                { tag: "#Gardening", posts: "130M", category: "garden" }
+            ],
+            whatsapp: [
+                { tag: "#WhatsApp", posts: "680M", category: "platform" },
+                { tag: "#Status", posts: "520M", category: "status" },
+                { tag: "#Chat", posts: "450M", category: "chat" },
+                { tag: "#Message", posts: "380M", category: "message" },
+                { tag: "#GroupChat", posts: "320M", category: "group" },
+                { tag: "#WhatsAppStatus", posts: "280M", category: "status" },
+                { tag: "#Forward", posts: "250M", category: "forward" },
+                { tag: "#VideoCall", posts: "220M", category: "call" },
+                { tag: "#VoiceMessage", posts: "200M", category: "voice" },
+                { tag: "#Sticker", posts: "180M", category: "sticker" },
+                { tag: "#WhatsAppWeb", posts: "150M", category: "web" }
+            ],
+            snapchat: [
+                { tag: "#Snapchat", posts: "520M", category: "platform" },
+                { tag: "#Snap", posts: "450M", category: "snap" },
+                { tag: "#Story", posts: "380M", category: "story" },
+                { tag: "#Filter", posts: "320M", category: "filter" },
+                { tag: "#Snapcode", posts: "280M", category: "code" },
+                { tag: "#SnapchatStory", posts: "250M", category: "story" },
+                { tag: "#Snapstreak", posts: "220M", category: "streak" },
+                { tag: "#Memories", posts: "200M", category: "memory" },
+                { tag: "#Bitmoji", posts: "180M", category: "bitmoji" },
+                { tag: "#SnapMap", posts: "150M", category: "map" },
+                { tag: "#Discover", posts: "130M", category: "discover" }
+            ],
+            telegram: [
+                { tag: "#Telegram", posts: "380M", category: "platform" },
+                { tag: "#Channel", posts: "320M", category: "channel" },
+                { tag: "#Group", posts: "280M", category: "group" },
+                { tag: "#Bot", posts: "250M", category: "bot" },
+                { tag: "#TelegramChannel", posts: "220M", category: "channel" },
+                { tag: "#Sticker", posts: "200M", category: "sticker" },
+                { tag: "#TelegramBot", posts: "180M", category: "bot" },
+                { tag: "#Privacy", posts: "150M", category: "privacy" },
+                { tag: "#SecretChat", posts: "130M", category: "chat" },
+                { tag: "#TelegramGroup", posts: "120M", category: "group" },
+                { tag: "#CloudStorage", posts: "110M", category: "storage" }
+            ]
+        };
+
+        // Mobile Menu Functions
+        function openMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('active');
+            document.getElementById('mobileMenuOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.remove('active');
+            document.getElementById('mobileMenuOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize Platform Hashtag Boxes
+        function initializePlatformBoxes() {
+            for (const platform in hashtagDatabase) {
+                const container = document.querySelector(`.${platform}-hashtags`);
+                if (container) {
+                    container.innerHTML = '';
+                    hashtagDatabase[platform].forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'hashtag-item';
+                        div.innerHTML = `
+                            <div class="flex-1">
+                                <span class="font-semibold text-gray-800 text-sm md:text-base">${item.tag}</span>
+                                <div class="text-xs text-gray-500 mt-1">${item.posts} posts</div>
+                            </div>
+                            <button class="copy-btn text-purple-600 hover:text-purple-800" onclick="copyToClipboard('${item.tag}')">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        `;
+                        // Click on entire item to copy
+                        div.addEventListener('click', (e) => {
+                            if (!e.target.closest('button')) {
+                                copyToClipboard(item.tag);
+                            }
+                        });
+                        container.appendChild(div);
+                    });
+                }
+            }
+        }
+
+        // Generate Hashtag Cloud
+        const cloudHashtags = [
+            "#AI", "#Tech", "#Digital", "#Marketing", "#WebDev", "#Startup", 
+            "#JavaScript", "#ReactJS", "#Python", "#ML", "#DataScience", 
+            "#CyberSecurity", "#Cloud", "#IoT", "#Blockchain", "#Crypto", 
+            "#NFT", "#Metaverse", "#ARVR", "#DevOps", "#Programming", 
+            "#Coding", "#Developer", "#Software", "#Hardware", "#Gadgets",
+            "#Innovation", "#Future", "#Smartphone", "#App", "#GameDev"
+        ];
+
+        function generateHashtagCloud() {
+            const cloudContainer = document.querySelector('.hashtag-cloud');
+            if (!cloudContainer) return;
+            
+            cloudContainer.innerHTML = '';
+            
+            // Shuffle and get 20 random hashtags for mobile, 25 for desktop
+            const isMobile = window.innerWidth < 768;
+            const count = isMobile ? 15 : 25;
+            
+            const shuffled = [...cloudHashtags].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, count);
+            
+            const colors = [
+                'bg-purple-100 text-purple-800',
+                'bg-blue-100 text-blue-800',
+                'bg-green-100 text-green-800',
+                'bg-yellow-100 text-yellow-800',
+                'bg-red-100 text-red-800',
+                'bg-pink-100 text-pink-800',
+                'bg-indigo-100 text-indigo-800'
+            ];
+            
+            selected.forEach(tag => {
+                const span = document.createElement('span');
+                const colorClass = colors[Math.floor(Math.random() * colors.length)];
+                span.className = `px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium ${colorClass} hover:scale-105 transition cursor-pointer`;
+                const baseSize = isMobile ? 12 : 14;
+                span.style.fontSize = `${Math.random() * 4 + baseSize}px`;
+                span.textContent = tag;
+                span.addEventListener('click', () => {
+                    copyToClipboard(tag);
+                });
+                cloudContainer.appendChild(span);
+            });
+        }
+
+        // Copy Functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`Copied: ${text}`);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('Copy failed, try manual copy');
+            });
+        }
+
+        function copyAllHashtags(platform) {
+            const hashtags = hashtagDatabase[platform].map(item => item.tag).join(' ');
+            copyToClipboard(hashtags);
+        }
+
+        function searchKeyword(keyword) {
+            document.getElementById('mainSearch').value = keyword;
+            showToast(`Searching for ${keyword}`);
+        }
+
+        function filterByCategory(category) {
+            showToast(`Filtering by ${category} category`);
+            // Add your filter logic here
+        }
+
+        // Show Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            if (!toast || !toastMessage) return;
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Scroll to Top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Counter animation function
+        function animateCounter(element, target, suffix = '', duration = 2000) {
+            let start = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    if (suffix === 'M') {
+                        element.textContent = (target / 1000000).toFixed(1) + suffix;
+                    } else {
+                        element.textContent = Math.floor(start).toLocaleString() + suffix;
+                    }
+                    clearInterval(timer);
+                } else {
+                    if (suffix === 'M') {
+                        element.textContent = (start / 1000000).toFixed(1) + suffix;
+                    } else {
+                        element.textContent = Math.floor(start).toLocaleString() + suffix;
+                    }
+                }
+            }, duration / 100);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Event Listeners
+            document.getElementById('mobileMenuButton').addEventListener('click', openMobileMenu);
+            document.getElementById('closeMenuButton').addEventListener('click', closeMobileMenu);
+            document.getElementById('mobileMenuOverlay').addEventListener('click', closeMobileMenu);
+            
+            initializePlatformBoxes();
+            generateHashtagCloud();
+            
+            // Initialize Chart.js
+            const ctx = document.getElementById('growthChart');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Hashtag Usage',
+                            data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 35000, 32000, 40000, 38000, 45000],
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value/1000 + 'K';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Animate counters
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const suffix = counter.getAttribute('data-suffix') || '';
+                animateCounter(counter, target, suffix, 1500);
+            });
+            
+            // Search functionality
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('mainSearch');
+            
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    if (searchInput.value.trim()) {
+                        showToast(`Searching for: ${searchInput.value}`);
+                    }
+                });
+                
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && searchInput.value.trim()) {
+                        showToast(`Searching for: ${searchInput.value}`);
+                    }
+                });
+            }
+            
+            // Generate new cloud on button click
+            const generateBtn = document.getElementById('generateCloud');
+            if (generateBtn) {
+                generateBtn.addEventListener('click', generateHashtagCloud);
+            }
+            
+            // Copy buttons for trending cards
+            document.querySelectorAll('.copy-single').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const hashtag = this.getAttribute('data-hashtag');
+                    copyToClipboard(hashtag);
+                });
+            });
+            
+            // Add hover effect to cards (only for non-touch devices)
+            if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+                document.querySelectorAll('.hashtag-card').forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-8px)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                    });
+                });
+            }
+            
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        closeMobileMenu();
+                    }
+                });
+            });
+            
+            // Regenerate cloud on window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    generateHashtagCloud();
+                }, 250);
+            });
+            
+            // Touch feedback for buttons
+            document.querySelectorAll('button, .hashtag-item, .category-tag').forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                element.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html
